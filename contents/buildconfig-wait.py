@@ -4,9 +4,10 @@ import sys
 import common
 import time
 
-from kubernetes import client
+from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from kubernetes import watch
+from openshift.dynamic import DynamicClient
 
 
 from os import environ
@@ -16,7 +17,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s: %(name)s: %(message)s"
 )
-log = logging.getLogger("kubernetes-wait-job")
+log = logging.getLogger("openshift-wait-build")
 
 
 def wait():
@@ -36,57 +37,53 @@ def wait():
 
             common.connect()
 
-            batch_v1 = client.BatchV1Api()
             core_v1 = client.CoreV1Api()
 
-            api_response = batch_v1.read_namespaced_job_status(
-                name,
-                namespace,
-                pretty="True"
-            )
-            log.debug(api_response)
+            label_selector = "buildconfig={}".format(name)
+            k8s_client = config.new_client_from_config()
+            openshift_client = DynamicClient(k8s_client)
 
-            #for condition in api_response.status.conditions:
-            #    log.info(condition.type)
+            v1_bc = openshift_client.resources.get(api_version='build.openshift.io/v1', kind='Build')
+            build_list = v1_bc.get(namespace=namespace, label_selector=label_selector)
+
+            latest_build = build_list.items[-1]
+            log.debug(latest_build)
 
             retries_count = retries_count + 1
             if retries_count > retries:
                 log.error("Number of retries exceeded")
                 completed = True
 
-            if api_response.status.conditions:
-                for condition in api_response.status.conditions:
-                    if condition.type == "Failed":
-                        completed = True
+            if latest_build['status']['phase'] == 'Failed':
+                completed = True
 
-
-            if api_response.status.completion_time:
+            if latest_build['status']['completionTimestamp']:
                 completed = True
 
             if show_log:
-                log.debug("Searching for pod associated with job")
+                log.debug("Searching for pod associated with build")
 
                 schedule_start_time = time.time()
                 schedule_timeout = 600
                 while True:
                     try:
-                        pod_list = core_v1.list_namespaced_pod(
-                            namespace,
-                            label_selector="job-name==" + name
-                        )
-                        first_item = pod_list.items[0]
-                        pod_name = first_item.metadata.name
+                        v1_pods = openshift_client.resources.get(api_version='v1', kind='Pod')
+                        label_selector = "openshift.io/build.name={}".format(latest_build['metadata']['name'])
+                        log.debug(label_selector)
+                        pod_list = v1_pods.get(namespace=namespace, label_selector=label_selector)
+                        log.debug(pod_list)
+                        pod_name = pod_list.items[-1]['metadata']['name']
                         break
                     except IndexError as IndexEx:
-                        log.warning("Still Waiting for Pod to be Scheduled")
-                        time.sleep(60)
+                        log.warning("Still Waiting for build pod to be scheduled")
+                        time.sleep(2)
                         if schedule_timeout and time.time() - schedule_start_time > schedule_timeout:  # pragma: no cover
                             raise TimeoutError
 
                 log.info("Fetching logs from pod: {0}".format(pod_name))
 
                 # time.sleep(15)
-                log.info("========================== job log start ==========================")
+                log.info("========================== build pod log start ==========================")
                 start_time = time.time()
                 timeout = 300
                 while True:
@@ -106,8 +103,8 @@ def wait():
 
                 w = watch.Watch()
                 for line in w.stream(core_v1.read_namespaced_pod_log,
-                                        name=pod_name,
-                                        namespace=namespace):
+                                     name=pod_name,
+                                     namespace=namespace):
                     print(line)
 
                 log.info("=========================== job log end ===========================")
@@ -119,15 +116,15 @@ def wait():
             show_log = False
             time.sleep(sleep)
 
-        if api_response.status.succeeded:
-            log.info("Job succeeded")
+        if latest_build['status']['phase'] == "Complete":
+            log.info("Build succeeded")
             sys.exit(0)
         else:
-            log.info("Job failed")
+            log.info("Build failed")
             sys.exit(1)
 
     except ApiException as e:
-        log.error("Exception waiting for job: %s\n" % e)
+        log.error("Exception waiting for build: %s\n" % e)
         sys.exit(1)
 
 
