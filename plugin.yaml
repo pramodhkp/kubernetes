@@ -2393,3 +2393,237 @@ providers:
         scope: Instance
         renderingOptions:
           groupName: Authentication
+  - name: Openshift-Create-Build
+    service: WorkflowNodeStep
+    title: Openshift / Build / Create
+    description: 'Create a BuildConfig'
+    plugin-type: script
+    script-interpreter: python -u
+    script-file: buildconfig-create.py
+    script-args:
+    config:
+      - name: namespace
+        type: String
+        title: "Namespace"
+        description: "Namespace where the buildconfig will be created"
+        required: true
+        default: "default"
+      - name: name
+        type: String
+        title: "Name"
+        description: "Name of the buildconfig"
+        required: true
+      - name: labels
+        type: String
+        title: "Labels"
+        description: "Labels. Add a comma separeted values (key=value format)"
+        required: true
+        renderingOptions:
+          groupName: Metadata
+      - name: yaml
+        type: String
+        title: "YAML String"
+        description: "YAML Definition"
+        required: true
+        renderingOptions:
+          displayType: CODE
+          codeSyntaxMode: yaml
+      - name: config_file
+        type: String
+        title: "Kubernetes Config File Path"
+        description: "Leave empty if you want to pass the connection parameters"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: url
+        type: String
+        title: "Cluster URL"
+        description: "Kubernetes Cluster URL"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: token
+        type: String
+        title: "Token"
+        required: false
+        description: "Kubernetes API Token"
+        renderingOptions:
+          groupName: Authentication
+          selectionAccessor: "STORAGE_PATH"
+          valueConversion: "STORAGE_PATH_AUTOMATIC_READ"
+          storage-path-root: "keys"
+      - name: verify_ssl
+        type: Boolean
+        title: "Verify ssl"
+        description: "Verify ssl for SSL connections"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: ssl_ca_cert
+        type: String
+        title: "SSL Certificate Path"
+        description: "SSL Certificate Path for SSL connections"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - type: Boolean
+        name: debug
+        title: Debug?
+        description: "Write debug messages to stderr"
+        required: false
+        renderingOptions:
+          groupName: Config
+  - name: Openshift-Wait-Build
+    service: WorkflowNodeStep
+    title: Openshift / Build / Waitfor
+    description: 'Waitfor Build'
+    plugin-type: script
+    script-interpreter: python -u
+    script-file: buildconfig-wait.py
+    script-args:
+    config:
+      - name: name
+        type: String
+        title: "Name"
+        description: "Build Name"
+        required: true
+      - name: namespace
+        type: String
+        title: "Namespace"
+        default: "default"
+        description: "Namespace where the job was created"
+        required: true
+      - name: retries
+        type: String
+        title: "Retries"
+        default: "100"
+        description: "Number of retries"
+        required: true
+      - name: sleep
+        type: String
+        title: "Sleep"
+        default: "10"
+        description: "Sleep between retries"
+        required: true
+      - name: show_log
+        type: Boolean
+        title: "Show Log"
+        default: true
+        description: "Show job log from kubernetes"
+        required: false
+      - name: config_file
+        type: String
+        title: "Kubernetes Config File Path"
+        description: "Leave empty if you want to pass the connection parameters"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: url
+        type: String
+        title: "Cluster URL"
+        description: "Kubernetes Cluster URL"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: token
+        type: String
+        title: "Token"
+        required: false
+        description: "Kubernetes API Token"
+        renderingOptions:
+          groupName: Authentication
+          selectionAccessor: "STORAGE_PATH"
+          valueConversion: "STORAGE_PATH_AUTOMATIC_READ"
+          storage-path-root: "keys"
+      - name: verify_ssl
+        type: Boolean
+        title: "Verify ssl"
+        description: "Verify ssl for SSL connections"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: ssl_ca_cert
+        type: String
+        title: "SSL Certificate Path"
+        description: "SSL Certificate Path for SSL connections"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - type: Boolean
+        name: debug
+        title: Debug?
+        description: "Write debug messages to stderr"
+        required: false
+        renderingOptions:
+          groupName: Config
+  - name: Openshift-Delete-Build
+    service: WorkflowNodeStep
+    title: Openshift / Build / Delete
+    description: 'Delete Build'
+    plugin-type: script
+    script-interpreter: python -u
+    script-file: buildconfig-delete.py
+    script-args:
+    config:
+      - name: name
+        type: String
+        title: "Name"
+        description: "Build Name"
+        required: true
+      - name: namespace
+        type: String
+        title: "Namespace"
+        default: "default"
+        description: "Namespace where the job was created"
+        required: true
+      - name: show_log
+        type: Boolean
+        title: "Show Log"
+        default: true
+        description: "Show job log from kubernetes"
+        required: false
+      - name: config_file
+        type: String
+        title: "Kubernetes Config File Path"
+        description: "Leave empty if you want to pass the connection parameters"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: url
+        type: String
+        title: "Cluster URL"
+        description: "Kubernetes Cluster URL"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: token
+        type: String
+        title: "Token"
+        required: false
+        description: "Kubernetes API Token"
+        renderingOptions:
+          groupName: Authentication
+          selectionAccessor: "STORAGE_PATH"
+          valueConversion: "STORAGE_PATH_AUTOMATIC_READ"
+          storage-path-root: "keys"
+      - name: verify_ssl
+        type: Boolean
+        title: "Verify ssl"
+        description: "Verify ssl for SSL connections"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: ssl_ca_cert
+        type: String
+        title: "SSL Certificate Path"
+        description: "SSL Certificate Path for SSL connections"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - type: Boolean
+        name: debug
+        title: Debug?
+        description: "Write debug messages to stderr"
+        required: false
+        renderingOptions:
+          groupName: Config
