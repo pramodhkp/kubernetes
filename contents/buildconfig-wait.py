@@ -75,14 +75,13 @@ def wait():
                         pod_name = pod_list.items[-1]['metadata']['name']
                         break
                     except IndexError as IndexEx:
-                        log.warning("Still Waiting for build pod to be scheduled")
+                        log.info("Still Waiting for build pod to be scheduled")
                         time.sleep(2)
                         if schedule_timeout and time.time() - schedule_start_time > schedule_timeout:  # pragma: no cover
                             raise TimeoutError
 
                 log.info("Fetching logs from pod: {0}".format(pod_name))
 
-                # time.sleep(15)
                 log.info("========================== build pod log start ==========================")
                 start_time = time.time()
                 timeout = 300
@@ -126,7 +125,6 @@ def wait():
     except ApiException as e:
         log.error("Exception waiting for build: %s\n" % e)
         sys.exit(1)
-
 
 
 def main():
