@@ -2476,7 +2476,7 @@ providers:
   - name: Openshift-Wait-Build
     service: WorkflowNodeStep
     title: Openshift / Build / Waitfor
-    description: 'Waitfor Build'
+    description: 'Wait for Build'
     plugin-type: script
     script-interpreter: python -u
     script-file: buildconfig-wait.py
@@ -2485,13 +2485,13 @@ providers:
       - name: name
         type: String
         title: "Name"
-        description: "Build Name"
+        description: "Buildconfig Name"
         required: true
       - name: namespace
         type: String
         title: "Namespace"
         default: "default"
-        description: "Namespace where the job was created"
+        description: "Namespace where the buildconfig was created"
         required: true
       - name: retries
         type: String
@@ -2509,7 +2509,7 @@ providers:
         type: Boolean
         title: "Show Log"
         default: true
-        description: "Show job log from kubernetes"
+        description: "Show build log from kubernetes"
         required: false
       - name: config_file
         type: String
@@ -2574,14 +2574,8 @@ providers:
         type: String
         title: "Namespace"
         default: "default"
-        description: "Namespace where the job was created"
+        description: "Namespace where the buildconfig is present"
         required: true
-      - name: show_log
-        type: Boolean
-        title: "Show Log"
-        default: true
-        description: "Show job log from kubernetes"
-        required: false
       - name: config_file
         type: String
         title: "Kubernetes Config File Path"
