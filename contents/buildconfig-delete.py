@@ -21,8 +21,8 @@ def main():
 
     data = {"namespace": os.environ.get('RD_CONFIG_NAMESPACE'), "name": os.environ.get('RD_CONFIG_NAME')}
 
-    k8s_client = config.new_client_from_config()
-    openshift_client = DynamicClient(k8s_client)
+    with client.ApiClient() as k8s_client:
+        openshift_client = DynamicClient(k8s_client)
 
     try:
         v1_bc = openshift_client.resources.get(api_version='build.openshift.io/v1', kind='BuildConfig')

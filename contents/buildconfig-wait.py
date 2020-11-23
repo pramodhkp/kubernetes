@@ -40,8 +40,9 @@ def wait():
             core_v1 = client.CoreV1Api()
 
             label_selector = "buildconfig={}".format(name)
-            k8s_client = config.new_client_from_config()
-            openshift_client = DynamicClient(k8s_client)
+
+            with client.ApiClient() as k8s_client:
+                openshift_client = DynamicClient(k8s_client)
 
             v1_bc = openshift_client.resources.get(api_version='build.openshift.io/v1', kind='Build')
             build_list = v1_bc.get(namespace=namespace, label_selector=label_selector)

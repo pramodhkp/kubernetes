@@ -52,8 +52,8 @@ def main():
 
     data = {"yaml": os.environ.get('RD_CONFIG_YAML'), "namespace": os.environ.get('RD_CONFIG_NAMESPACE'), "name": os.environ.get('RD_CONFIG_NAME')}
 
-    k8s_client = config.new_client_from_config()
-    openshift_client = DynamicClient(k8s_client)
+    with client.ApiClient() as k8s_client:
+        openshift_client = DynamicClient(k8s_client)
 
     try:
         dep = yaml.safe_load(data["yaml"])
