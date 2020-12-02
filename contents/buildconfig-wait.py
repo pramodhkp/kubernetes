@@ -107,12 +107,12 @@ def wait():
                                      namespace=namespace):
                     print(line)
 
-                log.info("=========================== job log end ===========================")
+                log.info("=========================== build log end ===========================")
 
             if completed:
                 break
 
-            log.info("Waiting for job completion")
+            log.info("Waiting for build completion")
             show_log = False
             time.sleep(sleep)
 
