@@ -956,6 +956,86 @@ providers:
         required: false
         renderingOptions:
           groupName: Config
+  - name: Kubernetes-Update
+    service: WorkflowNodeStep
+    title: Kubernetes / Generic / Update
+    description: 'Update a ConfigMap from YAML string'
+    plugin-type: script
+    script-interpreter: python -u
+    script-file: update-from-yaml.py
+    script-args:
+    config:
+      - name: name
+        type: String
+        title: "Name"
+        default: "default"
+        description: "Name of the configmap"
+        required: true
+      - name: namespace
+        type: String
+        title: "Namespace"
+        default: "default"
+        description: "Namespace where the deployment will be created "
+        required: true
+      - name: type
+        type: Select
+        title: "Type"
+        description: "Type"
+        required: true
+        values: ConfigMap
+      - name: yaml
+        type: String
+        title: "YAML String"
+        description: "YAML Definition"
+        required: true
+        renderingOptions:
+          displayType: CODE
+          codeSyntaxMode: yaml
+      - name: config_file
+        type: String
+        title: "Kubernetes Config File Path"
+        description: "Leave empty if you want to pass the connection parameters"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: url
+        type: String
+        title: "Cluster URL"
+        description: "Kubernetes Cluster URL"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: token
+        type: String
+        title: "Token"
+        required: false
+        description: "Kubernetes API Token"
+        renderingOptions:
+          groupName: Authentication
+          selectionAccessor: "STORAGE_PATH"
+          valueConversion: "STORAGE_PATH_AUTOMATIC_READ"
+          storage-path-root: "keys"
+      - name: verify_ssl
+        type: Boolean
+        title: "Verify ssl"
+        description: "Verify ssl for SSL connections"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - name: ssl_ca_cert
+        type: String
+        title: "SSL Certificate Path"
+        description: "SSL Certificate Path for SSL connections"
+        required: false
+        renderingOptions:
+          groupName: Authentication
+      - type: Boolean
+        name: debug
+        title: Debug?
+        description: "Write debug messages to stderr"
+        required: false
+        renderingOptions:
+          groupName: Config
   - name: Kubernetes-Delete
     service: WorkflowNodeStep
     title: Kubernetes / Generic / Delete

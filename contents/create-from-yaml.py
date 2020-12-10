@@ -107,6 +107,7 @@ def main():
                 body=dep,
                 pretty="true")
 
+            resp = api_instance.create_namespaced_persistent_volume_claim()
             print(common.parseJson(resp.status))
 
         if data["type"] == "Secret":
