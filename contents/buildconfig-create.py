@@ -64,7 +64,7 @@ def main():
     except ApiException as e:
         if e.status == 409:
             log.warning("Build config already exists.")
-            _trigger_build(data["namespace"], data["name"])
+            # _trigger_build(data["namespace"], data["name"])
         else:
             log.error("Exception error creating: %s\n" % e)
             sys.exit(1)
