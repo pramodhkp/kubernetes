@@ -32,38 +32,31 @@ def wait():
         retries_count = 0
         completed = False
 
-
         while True:
-
             common.connect()
-
             core_v1 = client.CoreV1Api()
-
             label_selector = "buildconfig={}".format(name)
-
             with client.ApiClient() as k8s_client:
                 openshift_client = DynamicClient(k8s_client)
 
             v1_bc = openshift_client.resources.get(api_version='build.openshift.io/v1', kind='Build')
             build_list = v1_bc.get(namespace=namespace, label_selector=label_selector)
-
-            latest_build = build_list.items[-1]
+            build_list_sorted = sorted(build_list.to_dict()['items'], key=lambda k: k['metadata']['creationTimestamp'])
+            latest_build = build_list_sorted[-1]
             log.debug(latest_build)
 
             retries_count = retries_count + 1
             if retries_count > retries:
                 log.error("Number of retries exceeded")
                 completed = True
-
             if latest_build['status']['phase'] == 'Failed':
                 completed = True
 
-            if latest_build['status']['completionTimestamp']:
+            if latest_build['status']['phase'] == 'Complete':
                 completed = True
 
             if show_log:
                 log.debug("Searching for pod associated with build")
-
                 schedule_start_time = time.time()
                 schedule_timeout = 600
                 while True:
@@ -82,7 +75,6 @@ def wait():
                             raise TimeoutError
 
                 log.info("Fetching logs from pod: {0}".format(pod_name))
-
                 log.info("========================== build pod log start ==========================")
                 start_time = time.time()
                 timeout = 300
@@ -111,18 +103,15 @@ def wait():
 
             if completed:
                 break
-
             log.info("Waiting for build completion")
             show_log = False
             time.sleep(sleep)
-
         if latest_build['status']['phase'] == "Complete":
             log.info("Build succeeded")
             sys.exit(0)
         else:
             log.info("Build failed")
             sys.exit(1)
-
     except ApiException as e:
         log.error("Exception waiting for build: %s\n" % e)
         sys.exit(1)
