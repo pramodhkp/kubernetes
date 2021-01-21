@@ -23,6 +23,7 @@ def wait():
     try:
         name = environ.get("RD_CONFIG_NAME")
         namespace = environ.get("RD_CONFIG_NAMESPACE")
+        container = environ.get("RD_CONFIG_CONTAINER")
         retries = int(environ.get("RD_CONFIG_RETRIES"))
         sleep = float(environ.get("RD_CONFIG_SLEEP"))
         show_log = environ.get("RD_CONFIG_SHOW_LOG") == "true"
@@ -89,10 +90,16 @@ def wait():
                 log.info("========================== job log start ==========================")
                 start_time = time.time()
                 timeout = 300
+                log.debug(container)
                 while True:
                     try:
-                        core_v1.read_namespaced_pod_log(name=pod_name,
-                                                        namespace=namespace)
+                        if container:
+                            core_v1.read_namespaced_pod_log(name=pod_name,
+                                                            namespace=namespace, container=container)
+                        else:
+                            core_v1.read_namespaced_pod_log(name=pod_name,
+                                                            namespace=namespace)
+
                         break
                     except ApiException as ex:
                         log.warning("Pod is not ready, status: {}".format(ex.status))
@@ -107,6 +114,7 @@ def wait():
                 w = watch.Watch()
                 for line in w.stream(core_v1.read_namespaced_pod_log,
                                         name=pod_name,
+                                        container=container,
                                         namespace=namespace):
                     print(line)
 

@@ -49,6 +49,10 @@ def _trigger_build(namespace, name):
 
 def main():
     common.connect()
+    disable_build = os.environ.get('RD_CONFIG_DISABLEBUILD')
+
+    if disable_build != "false":
+        sys.exit(0)
 
     data = {"yaml": os.environ.get('RD_CONFIG_YAML'), "namespace": os.environ.get('RD_CONFIG_NAMESPACE'), "name": os.environ.get('RD_CONFIG_NAME')}
 

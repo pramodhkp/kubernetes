@@ -123,6 +123,11 @@ def main():
         log.debug("Log level configured for DEBUG")
 
     common.connect()
+
+    disable_build = environ.get('RD_CONFIG_DISABLEBUILD')
+    if disable_build != "false":
+        sys.exit(0)
+
     wait()
 
 

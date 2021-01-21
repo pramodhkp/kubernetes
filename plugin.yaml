@@ -1852,6 +1852,11 @@ providers:
         default: "default"
         description: "Namespace where the job was created"
         required: true
+      - name: container
+        type: String
+        title: "Container"
+        default: ""
+        description: "Container to wait on incase there are more than one. "
       - name: retries
         type: String
         title: "Retries"
@@ -2488,6 +2493,11 @@ providers:
         description: "Namespace where the buildconfig will be created"
         required: true
         default: "default"
+      - name: disablebuild
+        type: String
+        title: "Disable the step?"
+        description: "Step will be disabled if this is true"
+        default: "false"
       - name: name
         type: String
         title: "Name"
@@ -2568,6 +2578,11 @@ providers:
         description: "Namespace where the buildconfig will be created"
         required: true
         default: "default"
+      - name: disablebuild
+        type: String
+        title: "Disable the step?"
+        description: "Step will be disabled if this is true"
+        default: "false"
       - name: name
         type: String
         title: "Name"
@@ -2632,6 +2647,11 @@ providers:
         title: "Name"
         description: "Buildconfig Name"
         required: true
+      - name: disablebuild
+        type: String
+        title: "Disable the step?"
+        description: "Step will be disabled if this is true"
+        default: "false"
       - name: namespace
         type: String
         title: "Namespace"

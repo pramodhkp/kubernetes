@@ -47,6 +47,10 @@ def main():
     common.connect()
 
     data = {"namespace": os.environ.get('RD_CONFIG_NAMESPACE'), "name": os.environ.get('RD_CONFIG_NAME')}
+    disable_build = os.environ.get('RD_CONFIG_DISABLEBUILD')
+
+    if disable_build != "false":
+        sys.exit(0)
 
     _trigger_build(data["namespace"], data["name"])
 
